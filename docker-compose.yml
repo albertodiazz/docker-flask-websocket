@@ -1,0 +1,42 @@
+version: '3.6'
+
+services:
+
+  mongodbMunavi:
+    image: mongo:5.0.8 
+    container_name: mongodbMunavi 
+    restart: always
+    volumes:
+      - /var/lib/docker/volumes/munabidb:/data/db
+    networks:
+        munabi:
+          ipv4_address: 10.90.125.22
+    environment:
+      MONGO_INITDB_DATABASE: dbtest1 
+
+  servidorMunavi:
+    image: munabiservidor
+    container_name: servidorMunavi
+    volumes:
+      - ./:/app
+    ports:
+      - 8765:8765 
+      - 2168:2168 
+      - 5000:5000
+      - 2068:2068
+    depends_on:
+      - mongodbMunavi 
+    networks:
+        servidor:
+          ipv4_address: 10.90.125.20
+
+networks:
+  munabi:
+    name: munabiNetwork
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.90.125.0/24
+  servidor:
+    external:
+      name: munabiNetwork 
